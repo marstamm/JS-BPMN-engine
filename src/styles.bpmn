@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0c8lcpy" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">
+  <bpmn:process id="Process_13iabjy" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_01awftz</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_0ab161j">
+      <bpmn:incoming>Flow_0i200qm</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="Activity_0r3hrom" name="Upload new Process">
+      <bpmn:incoming>Flow_080maov</bpmn:incoming>
+      <bpmn:incoming>Flow_0qa1464</bpmn:incoming>
+      <bpmn:outgoing>Flow_103jnbk</bpmn:outgoing>
+      <bpmn:script>this.i++;
+document.addProcess(`&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0dpzord" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1"&gt;
+  &lt;bpmn:process id="Process_1txx9jp" isExecutable="true"&gt;
+    &lt;bpmn:startEvent id="StartEvent_1"&gt;
+      &lt;bpmn:outgoing&gt;Flow_0s6leio&lt;/bpmn:outgoing&gt;
+    &lt;/bpmn:startEvent&gt;
+    &lt;bpmn:sequenceFlow id="Flow_0s6leio" sourceRef="StartEvent_1" targetRef="Activity_05y1tsv" /&gt;
+    &lt;bpmn:scriptTask id="Activity_05y1tsv" name="Process for 1 Sec"&gt;
+      &lt;bpmn:incoming&gt;Flow_0s6leio&lt;/bpmn:incoming&gt;
+      &lt;bpmn:outgoing&gt;Flow_102ufqs&lt;/bpmn:outgoing&gt;
+      &lt;bpmn:script&gt;var resolveAfter2Seconds = function() {
+  console.log("starting slow promise -&amp;gt; ");
+  return new Promise(resolve =&amp;gt; {
+    setTimeout(function() {
+      resolve("slow");
+      console.log("&amp;lt;- slow promise is done");
+    }, 1000);
+  });
+};
+
+resolveAfter2Seconds()&lt;/bpmn:script&gt;
+    &lt;/bpmn:scriptTask&gt;
+    &lt;bpmn:scriptTask id="Activity_08r6wqn" name="Process for 1 Sec"&gt;
+      &lt;bpmn:incoming&gt;Flow_102ufqs&lt;/bpmn:incoming&gt;
+      &lt;bpmn:outgoing&gt;Flow_1d7pbl3&lt;/bpmn:outgoing&gt;
+      &lt;bpmn:script&gt;var resolveAfter2Seconds = function() {
+  return new Promise(resolve =&amp;gt; {
+    setTimeout(function() {
+      resolve("slow");
+    }, 1000);
+  });
+};
+
+resolveAfter2Seconds()&lt;/bpmn:script&gt;
+    &lt;/bpmn:scriptTask&gt;
+    &lt;bpmn:sequenceFlow id="Flow_102ufqs" sourceRef="Activity_05y1tsv" targetRef="Activity_08r6wqn" /&gt;
+    &lt;bpmn:endEvent id="Event_03ooxdi"&gt;
+      &lt;bpmn:incoming&gt;Flow_1d7pbl3&lt;/bpmn:incoming&gt;
+    &lt;/bpmn:endEvent&gt;
+    &lt;bpmn:sequenceFlow id="Flow_1d7pbl3" sourceRef="Activity_08r6wqn" targetRef="Event_03ooxdi" /&gt;
+  &lt;/bpmn:process&gt;
+  &lt;bpmndi:BPMNDiagram id="BPMNDiagram_1"&gt;
+    &lt;bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1txx9jp"&gt;
+      &lt;bpmndi:BPMNEdge id="Flow_0s6leio_di" bpmnElement="Flow_0s6leio"&gt;
+        &lt;di:waypoint x="215" y="117" /&gt;
+        &lt;di:waypoint x="270" y="117" /&gt;
+      &lt;/bpmndi:BPMNEdge&gt;
+      &lt;bpmndi:BPMNEdge id="Flow_102ufqs_di" bpmnElement="Flow_102ufqs"&gt;
+        &lt;di:waypoint x="370" y="117" /&gt;
+        &lt;di:waypoint x="430" y="117" /&gt;
+      &lt;/bpmndi:BPMNEdge&gt;
+      &lt;bpmndi:BPMNEdge id="Flow_1d7pbl3_di" bpmnElement="Flow_1d7pbl3"&gt;
+        &lt;di:waypoint x="530" y="117" /&gt;
+        &lt;di:waypoint x="592" y="117" /&gt;
+      &lt;/bpmndi:BPMNEdge&gt;
+      &lt;bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1"&gt;
+        &lt;dc:Bounds x="179" y="99" width="36" height="36" /&gt;
+      &lt;/bpmndi:BPMNShape&gt;
+      &lt;bpmndi:BPMNShape id="Activity_0o948x1_di" bpmnElement="Activity_05y1tsv"&gt;
+        &lt;dc:Bounds x="270" y="77" width="100" height="80" /&gt;
+      &lt;/bpmndi:BPMNShape&gt;
+      &lt;bpmndi:BPMNShape id="Activity_08r6wqn_di" bpmnElement="Activity_08r6wqn"&gt;
+        &lt;dc:Bounds x="430" y="77" width="100" height="80" /&gt;
+      &lt;/bpmndi:BPMNShape&gt;
+      &lt;bpmndi:BPMNShape id="Event_03ooxdi_di" bpmnElement="Event_03ooxdi"&gt;
+        &lt;dc:Bounds x="592" y="99" width="36" height="36" /&gt;
+      &lt;/bpmndi:BPMNShape&gt;
+    &lt;/bpmndi:BPMNPlane&gt;
+  &lt;/bpmndi:BPMNDiagram&gt;
+&lt;/bpmn:definitions&gt;
+`)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_103jnbk" sourceRef="Activity_0r3hrom" targetRef="Gateway_0m13lap" />
+    <bpmn:scriptTask id="Activity_0gkzfrr" name="Add Drop Shadow">
+      <bpmn:incoming>Flow_01awftz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pt1bsq</bpmn:outgoing>
+      <bpmn:script>document.body.style = "filter: drop-shadow(2px 4px 6px black);"</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_01awftz" sourceRef="StartEvent_1" targetRef="Activity_0gkzfrr" />
+    <bpmn:sequenceFlow id="Flow_0pt1bsq" sourceRef="Activity_0gkzfrr" targetRef="Activity_1697yz8" />
+    <bpmn:exclusiveGateway id="Gateway_0m13lap" default="Flow_080maov">
+      <bpmn:incoming>Flow_103jnbk</bpmn:incoming>
+      <bpmn:outgoing>Flow_080maov</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0c9azb0</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_080maov" sourceRef="Gateway_0m13lap" targetRef="Activity_0r3hrom" />
+    <bpmn:sequenceFlow id="Flow_0c9azb0" name="Over 500 Processes?" sourceRef="Gateway_0m13lap" targetRef="Activity_0yt66xf">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="javascript">this.i &gt;= 500</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0i200qm" sourceRef="Activity_0yt66xf" targetRef="Event_0ab161j" />
+    <bpmn:scriptTask id="Activity_0yt66xf" name="Activate Auto Run">
+      <bpmn:incoming>Flow_0c9azb0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0i200qm</bpmn:outgoing>
+      <bpmn:script>autoRun.checked = true
+var resolveAfter2Seconds = function() {
+  console.log("starting slow promise -&gt; ");
+  return new Promise(resolve =&gt; {
+    setTimeout(function() {
+      resolve("slow");
+      console.log("&lt;- slow promise is done");
+    }, 1000);
+  });
+};
+
+resolveAfter2Seconds()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_1697yz8" name="Dectivate Demo Mode">
+      <bpmn:incoming>Flow_0pt1bsq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qa1464</bpmn:outgoing>
+      <bpmn:script>demoMode.checked = false;
+this.i = 0;
+</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0qa1464" sourceRef="Activity_1697yz8" targetRef="Activity_0r3hrom" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_13iabjy">
+      <bpmndi:BPMNEdge id="Flow_103jnbk_di" bpmnElement="Flow_103jnbk">
+        <di:waypoint x="700" y="120" />
+        <di:waypoint x="755" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01awftz_di" bpmnElement="Flow_01awftz">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="250" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pt1bsq_di" bpmnElement="Flow_0pt1bsq">
+        <di:waypoint x="350" y="120" />
+        <di:waypoint x="410" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qa1464_di" bpmnElement="Flow_0qa1464">
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="600" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c9azb0_di" bpmnElement="Flow_0c9azb0">
+        <di:waypoint x="805" y="120" />
+        <di:waypoint x="920" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="86" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_080maov_di" bpmnElement="Flow_080maov">
+        <di:waypoint x="780" y="145" />
+        <di:waypoint x="780" y="220" />
+        <di:waypoint x="680" y="220" />
+        <di:waypoint x="680" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="713" y="202" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i200qm_di" bpmnElement="Flow_0i200qm">
+        <di:waypoint x="1020" y="120" />
+        <di:waypoint x="1122" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_182v8gy_di" bpmnElement="Activity_0gkzfrr">
+        <dc:Bounds x="250" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1459ywq_di" bpmnElement="Activity_1697yz8">
+        <dc:Bounds x="410" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0m13lap_di" bpmnElement="Gateway_0m13lap" isMarkerVisible="true">
+        <dc:Bounds x="755" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_131us5s_di" bpmnElement="Activity_0r3hrom">
+        <dc:Bounds x="600" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ab161j_di" bpmnElement="Event_0ab161j">
+        <dc:Bounds x="1122" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1861kw5_di" bpmnElement="Activity_0yt66xf">
+        <dc:Bounds x="920" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

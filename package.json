@@ -10,10 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "copy-webpack-plugin": "^5.1.1",
     "webpack": "^4.41.4",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "bpmn-js": "^6.4.1",
     "bpmn-moddle": "^6.0.0"
   }
 }

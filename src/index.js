@@ -2,6 +2,18 @@ import BpmnModdle from "bpmn-moddle";
 import BpmnJS from "bpmn-js";
 import testXml from "./xml";
 
+function isDemoModeActive() {
+  return demoMode.checked;
+}
+
+function wait(millis) {
+  return new Promise((resolve) => {
+    setTimeout(function () {
+      resolve();
+    }, millis);
+  });
+}
+
 var viewer = new BpmnJS({
   container: document.getElementById("bpmn"),
 });
@@ -12,9 +24,27 @@ document.upload = async function (evt) {
   loadViewer(bpmn);
 };
 
-// function addOverlays() {
+function addOverlays(readyElements) {
+  const overlays = viewer.get("overlays");
+  overlays.clear();
 
-// }
+  const ids = readyElements.map((val) => val.targetRef.id);
+
+  const idCountMap = {};
+  ids.forEach((element) => {
+    idCountMap[element] = idCountMap[element] ? idCountMap[element] + 1 : 1;
+  });
+
+  for (const id in idCountMap) {
+    overlays.add(id, {
+      position: {
+        top: -5,
+        left: -5,
+      },
+      html: `<div style="width: 20px;background: lightblue;border-radius: 10px;text-align: center;height: 20px;">${idCountMap[id]}</div>`,
+    });
+  }
+}
 
 function loadViewer(bpmnXml) {
   viewer.importXML(bpmnXml, async function (err, definitions) {
@@ -38,6 +68,12 @@ function loadViewer(bpmnXml) {
     const processVariables = {};
 
     while ((current = readyElements.shift())) {
+      addOverlays([current, ...readyElements]);
+
+      if (isDemoModeActive()) {
+        await wait(1000);
+      }
+
       current = current.targetRef;
       console.log(current);
       if (current.$type === "bpmn:ScriptTask") {

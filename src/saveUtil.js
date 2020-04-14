@@ -33,11 +33,11 @@ function getProcessDefinition(id) {
 }
 
 function removeProcessInstance(id) {
-  console.log("delete");
+  // console.log("delete");
   var content = JSON.parse(localStorage.getItem("processInstances")) || {};
   delete content[id];
   localStorage.setItem("processInstances", JSON.stringify(content));
-  console.log(content);
+  // console.log(content);
 }
 
 function getCurrentId() {

@@ -9,6 +9,22 @@ import {
   getCurrentId,
 } from "./saveUtil";
 
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
 let id = getCurrentId();
 let running = false;
 function isDemoModeActive() {
@@ -27,61 +43,66 @@ var viewer = new BpmnJS({
   container: document.getElementById("bpmn"),
 });
 
-document.upload = async function (evt) {
-  console.log(evt, document.getElementById("bpmn-file"));
+document.upload = async function (run) {
+  // console.log(evt, document.getElementById("bpmn-file"));
   const bpmn = await document.getElementById("bpmn-file").files[0].text();
-  loadAndStartFromScratch(bpmn);
+  loadAndStartFromScratch(bpmn, run);
 };
 
 document.start = async function (evt) {
-  console.log(evt, document.getElementById("bpmn-file"));
+  // console.log(evt, document.getElementById("bpmn-file"));
   const bpmn = await document.getElementById("bpmn-file").files[0].text();
   loadAndStartFromScratch(bpmn);
 };
 
 document.uploadAndRun = async function (evt) {
-  console.log(evt, document.getElementById("bpmn-file"));
+  // console.log(evt, document.getElementById("bpmn-file"));
   const bpmn = await document.getElementById("bpmn-file").files[0].text();
   loadAndStartFromScratch(bpmn);
 };
 
-function addOverlays(readyElements) {
-  const overlays = viewer.get("overlays");
-  overlays.clear();
+const addOverlays = debounce(
+  function (readyElements) {
+    // console.log(readyElements, "overlays");
+    const overlays = viewer.get("overlays");
+    overlays.clear();
 
-  const ids = readyElements.map((val) => val.targetRef.id);
+    const ids = readyElements.map((val) => val.targetRef.id);
 
-  const idCountMap = {};
-  ids.forEach((element) => {
-    idCountMap[element] = idCountMap[element] ? idCountMap[element] + 1 : 1;
-  });
+    const idCountMap = {};
+    ids.forEach((element) => {
+      idCountMap[element] = idCountMap[element] ? idCountMap[element] + 1 : 1;
+    });
 
-  for (const id in idCountMap) {
-    try {
-      overlays.add(id, {
-        position: {
-          top: -5,
-          left: -5,
-        },
-        html: `<div style="width: 20px;background: lightblue;border-radius: 10px;text-align: center;height: 20px;">${idCountMap[id]}</div>`,
-      });
-    } catch (err) {}
-  }
-}
+    for (const id in idCountMap) {
+      try {
+        overlays.add(id, {
+          position: {
+            top: -5,
+            left: -5,
+          },
+          html: `<div style="width: 20px;background: lightblue;border-radius: 10px;text-align: center;height: 20px;">${idCountMap[id]}</div>`,
+        });
+      } catch (err) {}
+    }
+  },
+  50,
+  false
+);
 
 async function workOnProcess(processInstance) {
   removeProcessInstance(processInstance.id);
 
   idLabel.innerHTML = `Now working on Process Id ${processInstance.id}`;
-  console.log(id);
-  console.log(processInstance);
+  // console.log(id);
+  // console.log(processInstance);
   while (processInstance.readyElements.length) {
     await performProcessStep(processInstance);
   }
 
   idLabel.innerHTML = `Finished`;
 
-  if (autoRun.checked) bootstrap();
+  if (autoRun.checked) bootstrap(true);
 }
 
 async function performProcessStep(processInstance) {
@@ -90,7 +111,7 @@ async function performProcessStep(processInstance) {
     readyElements,
     elements,
   } = processInstance;
-  console.log(processInstance);
+  // console.log(processInstance);
 
   let current = readyElements.shift();
 
@@ -159,6 +180,7 @@ function loadAndStartFromSave(definition) {
     const linkedReadyElements = readyElements.map(
       (rEl) => elements.filter((el) => el.id === rEl.id)[0]
     );
+    console.log(readyElements, linkedReadyElements);
 
     workOnProcess({
       ...definition,
@@ -168,8 +190,9 @@ function loadAndStartFromSave(definition) {
   });
 }
 
-function loadAndStartFromScratch(bpmnXml) {
+function loadAndStartFromScratch(bpmnXml, run) {
   viewer.importXML(bpmnXml, async function () {
+    viewer.get("canvas").zoom("fit-viewport", "auto");
     var elements = viewer._definitions.rootElements[0].flowElements;
 
     const startEvent = elements.find((el) => {
@@ -195,17 +218,64 @@ function loadAndStartFromScratch(bpmnXml) {
       xml: bpmnXml,
     };
 
+    console.log(readyElements);
+
     saveProcessInstance(processInstance);
+    if (run) {
+      workOnProcess(processInstance);
+    }
     id++;
   });
 }
 
-function bootstrap() {
+function bootstrap(autoSelect) {
   const instances = getProcessInstances();
-  console.log(instances);
+  // console.log(instances);
 
-  loadAndStartFromSave(instances[Object.keys(instances)[0]]);
+  if (!Object.keys(instances)[0] && !autoSelect) {
+    document.upload(true);
+  } else {
+    loadAndStartFromSave(instances[Object.keys(instances)[0]]);
+  }
 }
 
 document.bootstrap = bootstrap;
-document.addProcess = loadAndStartFromScratch;
+
+var viewer2 = new BpmnJS({
+  container: document.createElement("div"),
+});
+
+document.addProcess = function (bpmnXml, run) {
+  viewer2.importXML(bpmnXml, async function () {
+    var elements = viewer2._definitions.rootElements[0].flowElements;
+
+    const startEvent = elements.find((el) => {
+      return el.$type === "bpmn:StartEvent";
+    });
+
+    const idToElementMap = {};
+    elements.forEach((element) => {
+      idToElementMap[element.id] = element;
+    });
+
+    const readyElements = [];
+    let current;
+    readyElements.push(...startEvent.outgoing);
+
+    const processVariables = {};
+
+    const processInstance = {
+      id: id,
+      variables: processVariables,
+      readyElements: readyElements,
+      elements: elements,
+      xml: bpmnXml,
+    };
+
+    saveProcessInstance(processInstance);
+    if (run) {
+      workOnProcess(processInstance);
+    }
+    id++;
+  });
+};
